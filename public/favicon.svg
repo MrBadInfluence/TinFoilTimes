@@ -1,0 +1,11 @@
+<!-- favicon.svg — the little picture in the browser tab: a tin foil hat.
+     It lives in the ROOT public/ folder because Vite copies everything in
+     public/ straight to the website as-is, so index.html can point at
+     "/favicon.svg". (Files in src/public/ are invisible to Vite.) -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- the cone of the hat: silver with a lighter crinkle down the middle -->
+  <polygon points="32,4 10,50 54,50" fill="#b8bcc2" stroke="#1a1a1a" stroke-width="3" stroke-linejoin="round"/>
+  <polyline points="32,8 26,22 34,30 27,44" fill="none" stroke="#eef0f2" stroke-width="2.5" stroke-linejoin="round"/>
+  <!-- the brim -->
+  <rect x="5" y="48" width="54" height="9" rx="3" fill="#8e939a" stroke="#1a1a1a" stroke-width="3"/>
+</svg>

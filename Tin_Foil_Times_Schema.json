@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "_id",
+    "body",
+    "category",
+    "comments",
+    "headline",
+    "submittedBy",
+    "votes"
+  ],
+  "properties": {
+    "_id": {
+      "$ref": "#/$defs/ObjectId"
+    },
+    "body": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string"
+    },
+    "comments": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "text",
+          "user"
+        ],
+        "properties": {
+          "text": {
+            "type": "string"
+          },
+          "user": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "headline": {
+      "type": "string"
+    },
+    "linkText": {
+      "type": "string"
+    },
+    "link": {
+      "type": "string",
+      "format": "uri"
+    },
+    "submittedBy": {
+      "type": "string"
+    },
+    "votes": {
+      "type": "object",
+      "required": [
+        "believe",
+        "debunked"
+      ],
+      "properties": {
+        "believe": {
+          "type": "integer"
+        },
+        "debunked": {
+          "type": "integer"
+        }
+      }
+    }
+  },
+  "$defs": {
+    "ObjectId": {
+      "type": "object",
+      "properties": {
+        "$oid": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F]{24}$"
+        }
+      },
+      "required": [
+        "$oid"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

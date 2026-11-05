@@ -1,0 +1,74 @@
+[
+  {
+    "headline": "Short One",
+    "body": "The moon is closer on Tuesdays.",
+    "category": "unexplained",
+    "submittedBy": "BREVITY_BOB",
+    "votes": {
+      "believe": 0,
+      "debunked": 0
+    },
+    "comments": [],
+    "createdAt": "2026-10-13T18:00:00Z"
+  },
+  {
+    "headline": "Extremely Long Filing Tests The Card Preview Truncation At One Hundred And Ten Characters",
+    "body": "This entry exists specifically to verify that shorten() trims a long body cleanly at 110 characters and appends a single ellipsis without cutting mid-word in an ugly way, and that the full untruncated text still renders correctly in the featured slot at the top of the page where no truncation is applied at all, including this final clause which should never appear on a card.",
+    "category": "tech",
+    "submittedBy": "QA_QUENTIN",
+    "votes": {
+      "believe": 1,
+      "debunked": 999
+    },
+    "comments": [],
+    "createdAt": "2026-10-16T18:00:00Z"
+  },
+  {
+    "headline": "Link Phrase Sits Past The Truncation Point On Purpose",
+    "body": "The first hundred characters of this leak are deliberately uninteresting padding so that the linked phrase falls outside the preview window, which means LinkedText must fall back to plain text on the card but still render a working anchor in the featured view, pointing at the Bermuda Triangle article.",
+    "category": "unexplained",
+    "submittedBy": "QA_QUENTIN",
+    "votes": {
+      "believe": 2,
+      "debunked": 1
+    },
+    "comments": [],
+    "createdAt": "2026-10-07T08:15:00Z",
+    "linkText": "Bermuda Triangle",
+    "link": "https://en.wikipedia.org/wiki/Bermuda_Triangle"
+  },
+  {
+    "headline": "Punctuation Stress Test: Quotes, Dashes & Accents",
+    "body": "A café owner's \"anonymous\" tip — filed at 3 a.m. — claims 50% of all apostrophes are surveillance devices; naïve users remain unconvinced.",
+    "category": "unexplained",
+    "submittedBy": "QA_QUENTIN",
+    "votes": {
+      "believe": 5,
+      "debunked": 3
+    },
+    "comments": [
+      {
+        "user": "NAÏVE_NED",
+        "text": "It's fine. Everything's fine — really."
+      }
+    ],
+    "createdAt": "2026-10-15T11:00:00Z"
+  },
+  {
+    "headline": "Highest Vote Count On Record Should Take The Front Page",
+    "body": "This filing exists to prove ?sort=top works: with 9,999 believers it must appear as the featured story ahead of every other leak in the collection.",
+    "category": "government",
+    "submittedBy": "QA_QUENTIN",
+    "votes": {
+      "believe": 9999,
+      "debunked": 0
+    },
+    "comments": [
+      {
+        "user": "QA_QUENTIN",
+        "text": "If this is not the top story, the sort is broken."
+      }
+    ],
+    "createdAt": "2026-10-11T07:00:00Z"
+  }
+]

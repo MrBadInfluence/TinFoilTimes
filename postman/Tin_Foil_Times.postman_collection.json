@@ -1,0 +1,245 @@
+{
+  "info": {
+    "name": "Tin Foil Times API",
+    "description": "Every endpoint of the Tin Foil Times REST API, plus the error cases. Run them top to bottom: request 1 saves a real leak _id into {{leakId}} so the PATCH requests have something to vote on.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5000" },
+    { "key": "leakId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "1. GET all leaks",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+              "pm.test('Returns an array of leaks', () => pm.expect(pm.response.json()).to.be.an('array').that.is.not.empty);",
+              "// Remember the first leak's _id for the PATCH requests below",
+              "pm.collectionVariables.set('leakId', pm.response.json()[0]._id);"
+            ]
+          }
+        }
+      ],
+      "request": { "method": "GET", "url": "{{baseUrl}}/api/leaks" }
+    },
+    {
+      "name": "2. GET leaks by category (tech)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+              "pm.test('Every leak is tech', () => pm.response.json().forEach(l => pm.expect(l.category).to.eql('tech')));"
+            ]
+          }
+        }
+      ],
+      "request": { "method": "GET", "url": "{{baseUrl}}/api/leaks?category=tech" }
+    },
+    {
+      "name": "3. GET leaks sorted by most believed",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+              "pm.test('Sorted by votes.believe, highest first', () => {",
+              "  const v = pm.response.json().map(l => l.votes.believe);",
+              "  for (let i = 1; i < v.length; i++) pm.expect(v[i - 1]).to.be.at.least(v[i]);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": { "method": "GET", "url": "{{baseUrl}}/api/leaks?sort=top" }
+    },
+    {
+      "name": "4. POST a new leak",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status is 201 Created', () => pm.response.to.have.status(201));",
+              "pm.test('Has a new _id and zero votes', () => {",
+              "  const l = pm.response.json();",
+              "  pm.expect(l._id).to.be.a('string');",
+              "  pm.expect(l.votes.believe).to.eql(0);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/api/leaks",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"headline\": \"Pigeons Seen Charging at Power Lines\",\n  \"body\": \"Witnesses report pigeons lining up on power lines at exactly 3am, apparently recharging.\",\n  \"category\": \"animals\",\n  \"submittedBy\": \"Agent Wobbly\"\n}"
+        }
+      }
+    },
+    {
+      "name": "5. POST rejected - missing headline and body (400)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status is 400', () => pm.response.to.have.status(400));",
+              "pm.test('Lists the missing fields', () => pm.expect(pm.response.json().fields).to.include.members(['headline', 'body']));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/api/leaks",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"category\": \"tech\"\n}" }
+      }
+    },
+    {
+      "name": "6. POST rejected - broken JSON (400)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status is 400', () => pm.response.to.have.status(400));",
+              "pm.test('Answer is JSON, not HTML', () => pm.response.to.be.json);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/api/leaks",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{ \"headline\": \"oops, no closing quote }" }
+      }
+    },
+    {
+      "name": "7. PATCH vote believe",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+              "pm.test('Returns the updated leak', () => pm.expect(pm.response.json()._id).to.eql(pm.collectionVariables.get('leakId')));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PATCH",
+        "url": "{{baseUrl}}/api/leaks/{{leakId}}/vote",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"vote\": \"believe\"\n}" }
+      }
+    },
+    {
+      "name": "8. PATCH vote debunked",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": ["pm.test('Status is 200', () => pm.response.to.have.status(200));"]
+          }
+        }
+      ],
+      "request": {
+        "method": "PATCH",
+        "url": "{{baseUrl}}/api/leaks/{{leakId}}/vote",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"vote\": \"debunked\"\n}" }
+      }
+    },
+    {
+      "name": "9. PATCH rejected - invalid vote word (400)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": ["pm.test('Status is 400', () => pm.response.to.have.status(400));"]
+          }
+        }
+      ],
+      "request": {
+        "method": "PATCH",
+        "url": "{{baseUrl}}/api/leaks/{{leakId}}/vote",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"vote\": \"maybe\"\n}" }
+      }
+    },
+    {
+      "name": "10. PATCH rejected - malformed id (400)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": ["pm.test('Status is 400', () => pm.response.to.have.status(400));"]
+          }
+        }
+      ],
+      "request": {
+        "method": "PATCH",
+        "url": "{{baseUrl}}/api/leaks/abc/vote",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"vote\": \"believe\"\n}" }
+      }
+    },
+    {
+      "name": "11. PATCH rejected - leak does not exist (404)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": ["pm.test('Status is 404', () => pm.response.to.have.status(404));"]
+          }
+        }
+      ],
+      "request": {
+        "method": "PATCH",
+        "url": "{{baseUrl}}/api/leaks/000000000000000000000000/vote",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"vote\": \"believe\"\n}" }
+      }
+    },
+    {
+      "name": "12. Unknown route - 404 catch-all",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status is 404', () => pm.response.to.have.status(404));",
+              "pm.test('Answer is JSON, not HTML', () => pm.response.to.be.json);"
+            ]
+          }
+        }
+      ],
+      "request": { "method": "GET", "url": "{{baseUrl}}/api/aliens-are-real" }
+    }
+  ]
+}
